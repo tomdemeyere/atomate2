@@ -153,6 +153,10 @@ atomate2 = ["py.typed"]
 method = "git"
 default-tag = "0.0.1"
 
+[tool.pyright]
+include = ["atomate2"]
+exclude = ["**/__pycache__"]
+
 [tool.mypy]
 ignore_missing_imports = true
 no_strict_optional = true

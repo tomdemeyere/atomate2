@@ -35,8 +35,6 @@ def test_lobster_task_document(lobster_test_dir):
         save_cohp_plots=False,
         calc_quality_kwargs={"n_bins": 100, "potcar_symbols": ["Ga_d", "As"]},
         lobsterpy_kwargs={"cutoff_icohp": 0.10, "noise_cutoff": 0.1},
-        save_cba_jsons=False,
-        save_computational_data_jsons=False,
         add_coxxcar_to_task_document=True,
     )
     assert isinstance(doc.structure, Structure)
