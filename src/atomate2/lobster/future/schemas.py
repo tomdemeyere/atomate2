@@ -5,12 +5,7 @@ import logging
 import time
 from importlib.util import find_spec
 from pathlib import Path
-<<<<<<< HEAD
-from typing import TYPE_CHECKING, Any, Union
-from warnings import warn
-=======
-from typing import Any, Union
->>>>>>> main
+from typing import Any, Union, TYPE_CHECKING
 
 import numpy as np
 from emmet.core.structure import StructureMetadata
@@ -659,100 +654,44 @@ class LobsterTaskDocument(StructureMetadata, extra="forbid"):
     doscar: DOSCAR | None = Field(
         None, description="pymatgen pymatgen.io.lobster.Doscardata"
     )
-<<<<<<< HEAD
     doscar_lcfo: DOSCAR_LCFO | None = Field(
         None, description="pymatgen pymatgen.io.lobster.DoscarLcfo data"
     )
     charge: CHARGE | None = Field(
-=======
-    charges: Charge | None = Field(
->>>>>>> main
         None,
         description="pymatgen Charge obj. Contains atomic charges based on Mulliken "
         "and Loewdin charge analysis",
     )
-<<<<<<< HEAD
     charge_lcfo: CHARGE_LCFO | None = Field(
-=======
-    lobsterout: LobsteroutModel = Field(description="Lobster out data")
-    lobsterin: LobsterinModel = Field(description="Lobster calculation inputs")
-    lobsterpy_data: CondensedBondingAnalysis | None = Field(
-        None, description="Model describing the LobsterPy data"
-    )
-    lobsterpy_text: str | None = Field(
-        None, description="Stores LobsterPy automatic analysis summary text"
-    )
-    calc_quality_summary: CalcQualitySummary | None = Field(
->>>>>>> main
         None,
         description="pymatgen ChargeLcfo obj. Contains atomic charges based on "
         "Mulliken and Loewdin charge analysis for LCFO",
     )
-<<<<<<< HEAD
-=======
-    calc_quality_text: str | None = Field(
-        None, description="Stores calculation quality analysis summary text"
-    )
-    strongest_bonds: StrongestBonds | None = Field(
-        None,
-        description="Describes the strongest cation-anion ICOOP, ICOBI and ICOHP bonds",
-    )
-    lobsterpy_data_cation_anion: CondensedBondingAnalysis | None = Field(
-        None, description="Model describing the LobsterPy data"
-    )
-    lobsterpy_text_cation_anion: str | None = Field(
-        None,
-        description="Stores LobsterPy automatic analysis summary text",
-    )
-    strongest_bonds_cation_anion: StrongestBonds | None = Field(
-        None,
-        description="Describes the strongest cation-anion ICOOP, ICOBI and ICOHP bonds",
-    )
-    dos: LobsterCompleteDos | None = Field(
-        None, description="pymatgen pymatgen.io.lobster.Doscar.completedos data"
-    )
-    lso_dos: LobsterCompleteDos | None = Field(
-        None, description="pymatgen pymatgen.io.lobster.Doscar.completedos data"
-    )
->>>>>>> main
     madelung_energies: MadelungEnergies | None = Field(
         None,
         description="pymatgen Madelung energies obj. Contains madelung energies"
         "based on Mulliken and Loewdin charges",
     )
-<<<<<<< HEAD
     site_potentials: SitePotentials | None = Field(
-=======
-    site_potentials: SitePotential | None = Field(
->>>>>>> main
         None,
         description="pymatgen Site potentials obj. Contains site potentials "
         "based on Mulliken and Loewdin charges",
     )
-<<<<<<< HEAD
     gross_populations: GROSSPOP | None = Field(
-=======
-    gross_populations: Grosspop | None = Field(
->>>>>>> main
         None,
         description="pymatgen Grosspopulations obj. Contains gross populations "
         " based on Mulliken and Loewdin charges ",
     )
-<<<<<<< HEAD
     gross_populations_lcfo: GROSSPOP_LCFO | None = Field(
         None,
         description="pymatgen GrosspopulationsLcfo obj. Contains gross populations "
         " based on Mulliken and Loewdin charges for LCFO",
     )
     band_overlaps: BandOverlaps | None = Field(
-=======
-    band_overlaps: Bandoverlaps | None = Field(
->>>>>>> main
         None,
         description="pymatgen Bandoverlaps obj for each k-point from"
         " bandOverlaps.lobster file if it exists",
     )
-<<<<<<< HEAD
 
     cohpcar: COHPCAR | None = Field(
         None, description="pymatgen CompleteCohp object with COHP data",
@@ -780,24 +719,6 @@ class LobsterTaskDocument(StructureMetadata, extra="forbid"):
         None, description="pymatgen Icohplist object with ICOOP data"
     )
     icobilist: ICOBILIST | None = Field(
-=======
-    cohp_data: CompleteCohp | None = Field(
-        None, description="pymatgen CompleteCohp object with COHP data"
-    )
-    coop_data: CompleteCohp | None = Field(
-        None, description="pymatgen CompleteCohp object with COOP data"
-    )
-    cobi_data: CompleteCohp | None = Field(
-        None, description="pymatgen CompleteCohp object with COBI data"
-    )
-    icohp_list: Icohplist | None = Field(
-        None, description="pymatgen Icohplist object with ICOHP data"
-    )
-    icoop_list: Icohplist | None = Field(
-        None, description="pymatgen Icohplist object with ICOOP data"
-    )
-    icobi_list: Icohplist | None = Field(
->>>>>>> main
         None, description="pymatgen Icohplist object with ICOBI data"
     )
     icobilist_lcfo: ICOBILIST_LCFO | None = Field(
@@ -893,204 +814,8 @@ class LobsterTaskDocument(StructureMetadata, extra="forbid"):
         return cls.from_structure(
             meta_structure=meta_structure,
             dir_name=dir_name,
-<<<<<<< HEAD
             **lobster_objects,
         ).model_copy(update=additional_fields)
-=======
-            lobsterin=lobster_in,
-            lobsterout=lobster_out,
-            # include additional fields for cation-anion
-            lobsterpy_data=condensed_bonding_analysis,
-            lobsterpy_text=" ".join(describe.text) if describe is not None else None,
-            strongest_bonds=sb_all,
-            lobsterpy_data_cation_anion=condensed_bonding_analysis_ionic,
-            lobsterpy_text_cation_anion=" ".join(describe_ionic.text)
-            if describe_ionic is not None
-            else None,
-            strongest_bonds_cation_anion=sb_ionic,
-            calc_quality_summary=calc_quality_summary
-            if calc_quality_summary is not None
-            else None,
-            calc_quality_text=" ".join(calc_quality_text)
-            if calc_quality_text is not None
-            else None,
-            dos=dos,
-            lso_dos=lso_dos,
-            charges=charges,
-            madelung_energies=madelung_energies,
-            site_potentials=site_potentials,
-            gross_populations=gross_populations,
-            band_overlaps=band_overlaps,
-            # include additional fields for all bonds
-            cohp_data=cohp_obj,
-            coop_data=coop_obj,
-            cobi_data=cobi_obj,
-            icohp_list=icohp_list,
-            icoop_list=icoop_list,
-            icobi_list=icobi_list,
-        )
-
-        if save_cba_jsons and analyze_outputs:
-            cba_json_save_dir = dir_name / "cba.json.gz"
-            with gzip.open(cba_json_save_dir, "wt", encoding="UTF-8") as file:
-                # Write the json in iterable format
-                # (Necessary to load large JSON files via ijson)
-                file.write("[")
-                if (
-                    doc.lobsterpy_data_cation_anion is not None
-                ):  # check if cation-anion analysis failed
-                    lobsterpy_analysis_type = (
-                        doc.lobsterpy_data_cation_anion.which_bonds.replace("-", "_")
-                    )
-                    data = {
-                        f"{lobsterpy_analysis_type}_bonds": {
-                            "lobsterpy_data": doc.lobsterpy_data_cation_anion,
-                            "lobsterpy_text": [
-                                "".join(doc.lobsterpy_text_cation_anion)
-                            ],
-                            "strongest_bonds": doc.strongest_bonds_cation_anion,
-                        }
-                    }
-                else:
-                    data = {"cation_anion_bonds": {}}
-                monty_encoded_json_doc = jsanitize(
-                    data, allow_bson=True, strict=True, enum_values=True
-                )
-                json.dump(monty_encoded_json_doc, file)
-                file.write(",")
-                # add all-bonds data
-                lobsterpy_analysis_type = doc.lobsterpy_data.which_bonds
-                data = {
-                    f"{lobsterpy_analysis_type}_bonds": {
-                        "lobsterpy_data": doc.lobsterpy_data,
-                        "lobsterpy_text": ["".join(doc.lobsterpy_text)],
-                        "strongest_bonds": doc.strongest_bonds,
-                    }
-                }
-                monty_encoded_json_doc = jsanitize(
-                    data, allow_bson=True, strict=True, enum_values=True
-                )
-                json.dump(monty_encoded_json_doc, file)
-                file.write(",")
-                data = {
-                    "madelung_energies": doc.madelung_energies
-                }  # add madelung energies
-                monty_encoded_json_doc = jsanitize(
-                    data, allow_bson=True, strict=True, enum_values=True
-                )
-                json.dump(monty_encoded_json_doc, file)
-                file.write(",")
-                data = {"charges": doc.charges}  # add charges
-                monty_encoded_json_doc = jsanitize(
-                    data, allow_bson=True, strict=True, enum_values=True
-                )
-                json.dump(monty_encoded_json_doc, file)
-                file.write(",")
-                data = {
-                    "calc_quality_summary": doc.calc_quality_summary
-                }  # add calc quality summary dict
-                monty_encoded_json_doc = jsanitize(
-                    data, allow_bson=True, strict=True, enum_values=True
-                )
-                json.dump(monty_encoded_json_doc, file)
-                file.write(",")
-                data = {
-                    "calc_quality_text": ["".join(doc.calc_quality_text)]  # type: ignore[dict-item]
-                }  # add calc quality summary dict
-                monty_encoded_json_doc = jsanitize(
-                    data, allow_bson=True, strict=True, enum_values=True
-                )
-                json.dump(monty_encoded_json_doc, file)
-                file.write(",")
-                data = {"dos": doc.dos}  # add NON LSO of lobster
-                monty_encoded_json_doc = jsanitize(
-                    data, allow_bson=True, strict=True, enum_values=True
-                )
-                json.dump(monty_encoded_json_doc, file)
-                file.write(",")
-                data = {"lso_dos": doc.lso_dos}  # add LSO DOS of lobster
-                monty_encoded_json_doc = jsanitize(
-                    data, allow_bson=True, strict=True, enum_values=True
-                )
-                json.dump(monty_encoded_json_doc, file)
-                del data, monty_encoded_json_doc
-                file.write("]")
-
-        if save_computational_data_jsons:
-            computational_data_json_save_dir = dir_name / "computational_data.json.gz"
-            fields_to_exclude = [
-                "nsites",
-                "elements",
-                "nelements",
-                "formula_anonymous",
-                "chemsys",
-                "volume",
-                "density",
-                "density_atomic",
-                "symmetry",
-            ]
-            # Always add cohp, cobi and coop data to the jsons if files exists
-            if cohpcar_path.exists() and doc.cohp_data is None:
-                cohp_obj = CompleteCohp.from_file(
-                    fmt="LOBSTER",
-                    structure_file=structure_path,
-                    filename=cohpcar_path,
-                    are_coops=False,
-                    are_cobis=False,
-                )
-                doc.cohp_data = cohp_obj
-
-            if coopcar_path.exists() and doc.coop_data is None:
-                coop_obj = CompleteCohp.from_file(
-                    fmt="LOBSTER",
-                    structure_file=structure_path,
-                    filename=coopcar_path,
-                    are_coops=True,
-                    are_cobis=False,
-                )
-                doc.coop_data = coop_obj
-
-            if cobicar_path.exists() and doc.cobi_data is None:
-                cobi_obj = CompleteCohp.from_file(
-                    fmt="LOBSTER",
-                    structure_file=structure_path,
-                    filename=cobicar_path,
-                    are_coops=False,
-                    are_cobis=True,
-                )
-                doc.cobi_data = cobi_obj
-            with gzip.open(
-                computational_data_json_save_dir, "wt", encoding="UTF-8"
-            ) as file:
-                # Write the json in iterable format
-                # (Necessary to load large JSON files via ijson)
-                file.write("[")
-                for attribute in doc.model_fields:
-                    if attribute not in fields_to_exclude:
-                        # Use monty encoder to automatically convert pymatgen
-                        # objects and other data json compatible dict format
-                        data = {
-                            attribute: jsanitize(
-                                getattr(doc, attribute),
-                                allow_bson=False,
-                                strict=True,
-                                enum_values=True,
-                            )
-                        }
-                        json.dump(data, file)
-                        if attribute != list(doc.model_fields.keys())[-1]:
-                            file.write(",")  # add comma separator between two dicts
-                        del data
-                file.write("]")
-
-            # Again unset the cohp, cobi and coop data fields if not desired in the DB
-            if not add_coxxcar_to_task_document:
-                doc.cohp_data = None
-                doc.coop_data = None
-                doc.cobi_data = None
-
-        return doc.model_copy(update=additional_fields)
->>>>>>> main
 
 
 def _replace_inf_values(data: Union[dict[Any, Any], list[Any]]) -> None:
