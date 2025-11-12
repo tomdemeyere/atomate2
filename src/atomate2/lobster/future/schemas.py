@@ -5,7 +5,7 @@ import logging
 import time
 from importlib.util import find_spec
 from pathlib import Path
-from typing import Any, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Union
 
 import numpy as np
 from emmet.core.structure import StructureMetadata
@@ -50,6 +50,7 @@ has_ijson = bool(find_spec("ijson"))
 if TYPE_CHECKING or has_lobsterpy:
     from lobsterpy.cohp.analyze import Analysis
     from lobsterpy.cohp.describe import Description
+    from pymatgen.io.lobster.future.core import LobsterFile
 
 if TYPE_CHECKING or has_ijson:
     import ijson
@@ -644,9 +645,7 @@ class StrongestBonds(BaseModel):
 class LobsterTaskDocument(StructureMetadata, extra="forbid"):
     """Definition of LOBSTER task document."""
 
-    dir_name: str | Path = Field(
-        description="The directory for this Lobster task"
-    )
+    dir_name: str | Path = Field(description="The directory for this Lobster task")
 
     lobster_in: LobsterIn = Field(description="Lobster calculation inputs")
     lobster_out: LobsterOut = Field(description="Lobster out data")
@@ -694,7 +693,8 @@ class LobsterTaskDocument(StructureMetadata, extra="forbid"):
     )
 
     cohpcar: COHPCAR | None = Field(
-        None, description="pymatgen CompleteCohp object with COHP data",
+        None,
+        description="pymatgen CompleteCohp object with COHP data",
     )
     coopcar: COOPCAR | None = Field(
         None, description="pymatgen CompleteCohp object with COOP data"
@@ -703,7 +703,8 @@ class LobsterTaskDocument(StructureMetadata, extra="forbid"):
         None, description="pymatgen CompleteCohp object with COBI data"
     )
     cohpcar_lcfo: COHPCAR_LCFO | None = Field(
-        None, description="pymatgen CompleteCohp object with COHP data for LCFO",
+        None,
+        description="pymatgen CompleteCohp object with COHP data for LCFO",
     )
     cobicar_lcfo: COBICAR_LCFO | None = Field(
         None, description="pymatgen CompleteCohp object with COBI data for LCFO"
@@ -764,7 +765,7 @@ class LobsterTaskDocument(StructureMetadata, extra="forbid"):
 
         additional_fields = additional_fields or {}
 
-        lobster_objects: dict[str, Any] = {
+        lobster_objects: dict[str, type[LobsterFile]] = {
             "lobster_out": LobsterOut,
             "doscar": DOSCAR,
             "doscar_lcfo": DOSCAR_LCFO,
@@ -788,33 +789,39 @@ class LobsterTaskDocument(StructureMetadata, extra="forbid"):
             "nc_icobilist": NcICOBILIST,
         }
 
+        lobster_kwargs: dict[str, Any] = dict.fromkeys(lobster_objects.keys(), None)
+
         for name, parser in lobster_objects.items():
             try:
-                lobster_objects[name] = parser()
+                lobster_kwargs[name] = parser(
+                    zpath(dir_name / parser.get_default_filename())
+                )
             except FileNotFoundError:
-                logger.warning(f"Could not find the {name} file in {dir_name}", stacklevel=2)
-                lobster_objects[name] = None
+                logger.warning(
+                    f"Could not find the {name} file in {dir_name}", stacklevel=2
+                )
+                lobster_kwargs[name] = None
             except RuntimeError:
                 logger.exception(f"Could not parse {name} with {parser}")
-                lobster_objects[name] = None
+                lobster_kwargs[name] = None
 
-        if lobster_objects["lobster_out"] is None:
+        if lobster_kwargs["lobster_out"] is None:
             raise ValueError(f"Could not parse lobsterout in {dir_name}")
 
-        lobster_objects["lobster_in"] = LobsterIn.from_file(dir_name / "lobsterin")
+        lobster_kwargs["lobster_in"] = LobsterIn.from_file(dir_name / "lobsterin")
 
         meta_structure = Structure.from_file(dir_name / "CONTCAR")
 
         try:
-            lobster_objects["fatbands"] = Fatbands(dir_name)
+            lobster_kwargs["fatbands"] = Fatbands(dir_name)
         except (FileNotFoundError, RuntimeError, ValueError) as e:
             logger.warning(f"Could not parse fatbands with Fatbands: {e}", stacklevel=2)
-            lobster_objects["fatbands"] = None
+            lobster_kwargs["fatbands"] = None
 
         return cls.from_structure(
             meta_structure=meta_structure,
             dir_name=dir_name,
-            **lobster_objects,
+            **lobster_kwargs,
         ).model_copy(update=additional_fields)
 
 
