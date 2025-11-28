@@ -15,6 +15,7 @@ from monty.os.path import zpath
 from pydantic import BaseModel, Field
 from pymatgen.core import Structure
 from pymatgen.electronic_structure.cohp import Cohp
+from pymatgen.io.lobster import Icohplist
 from pymatgen.io.lobster.future import (
     CHARGE,
     CHARGE_LCFO,
@@ -642,7 +643,7 @@ class StrongestBonds(BaseModel):
     )
 
 
-class LobsterTaskDocument(StructureMetadata, extra="forbid"):
+class LobsterTaskDocument(StructureMetadata):
     """Definition of LOBSTER task document."""
 
     dir_name: str | Path = Field(description="The directory for this Lobster task")
@@ -808,7 +809,9 @@ class LobsterTaskDocument(StructureMetadata, extra="forbid"):
         if lobster_kwargs["lobster_out"] is None:
             raise ValueError(f"Could not parse lobsterout in {dir_name}")
 
-        lobster_kwargs["lobster_in"] = LobsterIn.from_file(dir_name / "lobsterin")
+        lobster_kwargs["lobster_in"] = LobsterIn.from_file(
+            zpath(dir_name / "lobsterin")
+        )
 
         meta_structure = Structure.from_file(dir_name / "CONTCAR")
 

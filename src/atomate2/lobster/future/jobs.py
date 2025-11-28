@@ -6,10 +6,9 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from jobflow import Maker, job
-from pymatgen.electronic_structure.cohp import CompleteCohp
-from pymatgen.electronic_structure.dos import LobsterCompleteDos
-from pymatgen.io.lobster import Bandoverlaps, Icohplist, Lobsterin
+from jobflow.core.job import job
+from jobflow.core.maker import Maker
+from pymatgen.io.lobster import Lobsterin
 
 from atomate2 import SETTINGS
 from atomate2.common.files import gzip_output_folder
@@ -18,8 +17,8 @@ from atomate2.lobster.files import (
     VASP_OUTPUT_FILES,
     copy_lobster_files,
 )
+from atomate2.lobster.future.schemas import LobsterTaskDocument
 from atomate2.lobster.run import run_lobster
-from atomate2.lobster.schemas import LobsterTaskDocument
 
 logger = logging.getLogger(__name__)
 
@@ -50,12 +49,13 @@ class LobsterMaker(Maker):
         :obj:`.Lobsterin.standard_calculations_from_vasp_files`.
     """
 
-    task_document_kwargs: dict = field(default_factory=dict)
+    name: str = "lobster"
+    additional_fields: dict = field(default_factory=dict)
     user_lobsterin_settings: dict | None = None
     run_lobster_kwargs: dict = field(default_factory=dict)
     calculation_type: str = "standard"
 
-    @job
+    @job(output_schema=LobsterTaskDocument)
     def make(
         self,
         wavefunction_dir: str | Path | None = None,
@@ -65,7 +65,7 @@ class LobsterMaker(Maker):
 
         Parameters
         ----------
-        wavefunction_dir : str or Path
+        wavefunction_dir : str | Path | None
             A directory containing a WAVEFUNCTION and other outputs needed for Lobster
         basis_dict: dict
             A dict including information on the basis set
@@ -78,28 +78,21 @@ class LobsterMaker(Maker):
 
         if self.user_lobsterin_settings:
             for key, parameter in self.user_lobsterin_settings.items():
-                # basis function can only be changed with the help of a yaml file
                 if key != "basisfunctions":
                     lobsterin[key] = parameter
 
         lobsterin.write_lobsterin("lobsterin")
 
+        logger.info("Running LOBSTER")
         run_lobster(**self.run_lobster_kwargs)
 
-        # gzip folder
         gzip_output_folder(
             directory=Path.cwd(),
             setting=SETTINGS.LOBSTER_ZIP_FILES,
             files_list=_FILES_TO_ZIP,
         )
 
-        # parse lobster outputs
         return LobsterTaskDocument.from_directory(
             Path.cwd(),
-            **self.task_document_kwargs,
+            self.additional_fields,
         )
-
-    @property
-    def name(self) -> str:
-        """Name of the Maker."""
-        return "lobster"
