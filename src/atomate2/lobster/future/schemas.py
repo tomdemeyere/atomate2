@@ -813,7 +813,7 @@ class LobsterTaskDocument(StructureMetadata):
             zpath(dir_name / "lobsterin")
         )
 
-        meta_structure = Structure.from_file(dir_name / "CONTCAR")
+        meta_structure = Structure.from_file(zpath(dir_name / "CONTCAR"))
 
         try:
             lobster_kwargs["fatbands"] = Fatbands(dir_name)
