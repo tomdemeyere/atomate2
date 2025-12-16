@@ -5,8 +5,10 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
-from jobflow import Maker, job
+from jobflow.core.job import job
+from jobflow.core.maker import Maker
 from pymatgen.electronic_structure.cohp import CompleteCohp
 from pymatgen.electronic_structure.dos import LobsterCompleteDos
 from pymatgen.io.lobster import Bandoverlaps, Icohplist, Lobsterin
@@ -50,7 +52,6 @@ class LobsterMaker(Maker):
         :obj:`.Lobsterin.standard_calculations_from_vasp_files`.
     """
 
-    name: str = "lobster"
     task_document_kwargs: dict = field(default_factory=dict)
     user_lobsterin_settings: dict | None = None
     run_lobster_kwargs: dict = field(default_factory=dict)
@@ -67,14 +68,14 @@ class LobsterMaker(Maker):
     )
     def make(
         self,
-        wavefunction_dir: str | Path = None,
-        basis_dict: dict | None = None,
+        wavefunction_dir: str | Path | None = None,
+        basis_dict: dict[str, Any] | None = None,
     ) -> LobsterTaskDocument:
         """Run a LOBSTER calculation.
 
         Parameters
         ----------
-        wavefunction_dir : str or Path
+        wavefunction_dir : str or Path or None, optional
             A directory containing a WAVEFUNCTION and other outputs needed for Lobster
         basis_dict: dict
             A dict including information on the basis set
@@ -111,3 +112,8 @@ class LobsterMaker(Maker):
             Path.cwd(),
             **self.task_document_kwargs,
         )
+
+    @property
+    def name(self) -> str:
+        """Get the name of the job."""
+        return "lobster"

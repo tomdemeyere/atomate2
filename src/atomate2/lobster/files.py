@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 def copy_lobster_files(
     src_dir: Path | str,
     src_host: str | None = None,
-    file_client: FileClient = None,
+    file_client: FileClient | None = None,
 ) -> None:
     """
     Copy Lobster files to current directory.
@@ -67,18 +67,22 @@ def copy_lobster_files(
     ----------
     src_dir : Path or str
         The source directory.
-    src_host : str or None
+    src_host : str or None, optional
         The source hostname used to specify a remote filesystem. Can be given as
         either "username@remote_host" or just "remote_host" in which case the username
         will be inferred from the current user. If ``None``, the local filesystem will
         be used as the source.
-    file_client : FileClient
+    file_client : FileClient or None, optional
         A file client to use for performing file operations.
     """
     src_dir = strip_hostname(src_dir)  # TODO: Handle hostnames properly.
 
     logger.info(f"Copying LOBSTER inputs from {src_dir}")
-    directory_listing = file_client.listdir(src_dir, host=src_host)
+
+    if file_client is not None:
+        directory_listing = file_client.listdir(src_dir, host=src_host)
+    else:
+        raise ValueError("Could not get file client, please provide one.")
 
     # find optional files
     files = []

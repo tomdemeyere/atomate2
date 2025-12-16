@@ -8,7 +8,7 @@ import subprocess
 from os.path import expandvars
 from typing import TYPE_CHECKING, Any
 
-from custodian import Custodian
+from custodian.custodian import Custodian
 from custodian.lobster.handlers import EnoughBandsValidator, LobsterFilesValidator
 from custodian.lobster.jobs import LobsterJob
 from emmet.core.types.enums import ValueEnum
@@ -43,10 +43,10 @@ def run_lobster(
     job_type: JobType | str = JobType.NORMAL,
     lobster_cmd: str = SETTINGS.LOBSTER_CMD,
     max_errors: int = SETTINGS.LOBSTER_CUSTODIAN_MAX_ERRORS,
-    scratch_dir: str = SETTINGS.CUSTODIAN_SCRATCH_DIR,
+    scratch_dir: str | None = SETTINGS.CUSTODIAN_SCRATCH_DIR,
     validators: Sequence[Validator] = _DEFAULT_VALIDATORS,
-    lobster_job_kwargs: dict[str, Any] = None,
-    custodian_kwargs: dict[str, Any] = None,
+    lobster_job_kwargs: dict[str, Any] | None = None,
+    custodian_kwargs: dict[str, Any] | None = None,
 ) -> None:
     """
     Run Lobster.
