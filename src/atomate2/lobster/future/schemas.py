@@ -649,7 +649,7 @@ class LobsterTaskDocument(StructureMetadata):
     dir_name: str | Path = Field(description="The directory for this Lobster task")
 
     lobster_in: LobsterIn = Field(description="Lobster calculation inputs")
-    lobster_out: LobsterOut = Field(description="Lobster out data")
+    lobster_out: LobsterOut | None = Field(description="Lobster out data")
 
     doscar: DOSCAR | None = Field(
         None, description="pymatgen pymatgen.io.lobster.Doscardata"
@@ -801,10 +801,8 @@ class LobsterTaskDocument(StructureMetadata):
                 logger.warning(
                     f"Could not find the {name} file in {dir_name}", stacklevel=2
                 )
-                lobster_kwargs[name] = None
             except RuntimeError:
                 logger.exception(f"Could not parse {name} with {parser}")
-                lobster_kwargs[name] = None
 
         if lobster_kwargs["lobster_out"] is None:
             raise ValueError(f"Could not parse lobsterout in {dir_name}")
