@@ -804,9 +804,6 @@ class LobsterTaskDocument(StructureMetadata):
             except RuntimeError:
                 logger.exception(f"Could not parse {name} with {parser}")
 
-        if lobster_kwargs["lobster_out"] is None:
-            raise ValueError(f"Could not parse lobsterout in {dir_name}")
-
         lobster_kwargs["lobster_in"] = LobsterIn.from_file(
             zpath(dir_name / "lobsterin")
         )
