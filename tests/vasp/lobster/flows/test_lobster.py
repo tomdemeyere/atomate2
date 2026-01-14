@@ -327,3 +327,6 @@ def test_mp_vasp_lobstermaker(
     )
 
     assert isinstance(task_doc, LobsterTaskDocument)
+
+
+def test_mcba_lobstermaker(mock_vasp, mock_lobster): ...

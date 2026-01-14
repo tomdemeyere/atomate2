@@ -11,7 +11,7 @@ from jobflow import JobStore
 from jobflow.settings import JobflowSettings
 from maggma.stores import MemoryStore
 from monty.serialization import loadfn
-from pymatgen.core import Structure
+from pymatgen.core import Molecule, Structure
 
 from atomate2.utils.log import initialize_logger
 
@@ -120,6 +120,16 @@ def sr_ti_o3_structure(test_dir):
 @pytest.fixture
 def ba_ti_o3_structure(test_dir):
     return Structure.from_file(test_dir / "structures" / "BaTiO3.cif")
+
+
+@pytest.fixture
+def b4_h12_structure(test_dir):
+    return Structure.from_file(test_dir / "structures" / "B4H12.cif")
+
+
+@pytest.fixture
+def c2_h12_b10_molecule(test_dir):
+    return Molecule.from_file(test_dir / "molecules" / "C2H12B10.xyz")
 
 
 @pytest.fixture(autouse=True)
