@@ -649,7 +649,7 @@ class LobsterTaskDocument(StructureMetadata):
     dir_name: str | Path = Field(description="The directory for this Lobster task")
 
     lobster_in: LobsterIn = Field(description="Lobster calculation inputs")
-    lobster_out: LobsterOut | None = Field(description="Lobster out data")
+    lobster_out: LobsterOut | None = Field(None, description="Lobster out data")
 
     doscar: DOSCAR | None = Field(
         None, description="pymatgen pymatgen.io.lobster.Doscardata"
