@@ -45,10 +45,10 @@ class MCBAMaker(Maker):
     """
 
     name: str = "MCBALobsterFlow"  # type: ignore[assignment]
-    vasp_relax_maker: RelaxMaker | None = (None,)
-    vasp_static_maker: UniformBandStructureMaker | None = (None,)
-    lobster_maker: LobsterMaker | None = (None,)
-    orbital_wise: bool = (False,)
+    vasp_relax_maker: RelaxMaker | None = None
+    vasp_static_maker: UniformBandStructureMaker | None = None
+    lobster_maker: LobsterMaker | None = None
+    orbital_wise: bool = False
 
     def make(
         self,
