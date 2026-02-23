@@ -9,13 +9,6 @@ from pathlib import Path
 from jobflow.core.job import job
 from jobflow.core.maker import Maker
 from pymatgen.io.lobster import Lobsterin
-from pymatgen.io.lobster.future import (
-    COBICAR,
-    COBICAR_LCFO,
-    COHPCAR,
-    COHPCAR_LCFO,
-    COOPCAR,
-)
 
 from atomate2 import SETTINGS
 from atomate2.common.files import gzip_output_folder
@@ -64,7 +57,7 @@ class LobsterMaker(Maker):
 
     @job(
         output_schema=LobsterTaskDocument,
-        data=[COHPCAR, COBICAR, COOPCAR, COBICAR_LCFO, COHPCAR_LCFO],
+        data=["COHPCAR", "COBICAR", "COOPCAR", "COBICAR_LCFO", "COHPCAR_LCFO"],
     )
     def make(
         self,

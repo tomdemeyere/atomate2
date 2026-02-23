@@ -3,10 +3,15 @@ from jobflow import run_locally
 from monty.serialization import loadfn
 
 from atomate2.forcefields.flows.eos import ForceFieldEosMaker
+from atomate2.forcefields.jobs import ForceFieldRelaxMaker
 from atomate2.utils.testing import get_job_uuid_name_map
 
+from ..conftest import mlff_is_installed  # noqa: TID252
 
-@pytest.mark.parametrize("mlff", ["CHGNet", "MACE"])
+
+@pytest.mark.parametrize(
+    "mlff", [mlff for mlff in ["CHGNet", "MACE"] if mlff_is_installed(mlff)]
+)
 def test_ml_ff_eos_makers(mlff: str, si_structure, clean_dir, test_dir):
     maker = ForceFieldEosMaker.from_force_field_name(mlff)
     job = maker.make(si_structure)
@@ -35,3 +40,19 @@ def test_ml_ff_eos_makers(mlff: str, si_structure, clean_dir, test_dir):
         ).initial_relax_maker
         is None
     )
+
+
+def test_ext_load_eos_initialization():
+    pytest.importorskip("mace")
+    calculator_meta = {
+        "@module": "mace.calculators",
+        "@callable": "mace_mp",
+    }
+    maker = ForceFieldEosMaker.from_force_field_name(
+        force_field_name=calculator_meta,
+        relax_initial_structure=True,
+    )
+    assert isinstance(maker.initial_relax_maker, ForceFieldRelaxMaker)
+    assert isinstance(maker.eos_relax_maker, ForceFieldRelaxMaker)
+    assert maker.initial_relax_maker.ase_calculator_name == "mace_mp"
+    assert maker.eos_relax_maker.ase_calculator_name == "mace_mp"
