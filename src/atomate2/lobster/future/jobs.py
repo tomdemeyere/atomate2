@@ -57,7 +57,7 @@ class LobsterMaker(Maker):
 
     @job(
         output_schema=LobsterTaskDocument,
-        data=["COHPCAR", "COBICAR", "COOPCAR", "COBICAR_LCFO", "COHPCAR_LCFO"],
+        data=["cohpcar", "cobicar", "coopcar", "cobicar_lcfo", "cohpcar_lcfo"],
     )
     def make(
         self,
