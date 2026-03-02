@@ -944,13 +944,23 @@ class LobsterTaskDocument(StructureMetadata, extra="allow"):  # type: ignore[cal
                 )
 
             if cobicar_path.exists():
-                cobi_obj = CompleteCohp.from_file(
-                    fmt="LOBSTER",
-                    structure_file=structure_path,
-                    filename=cobicar_path,
-                    are_coops=False,
-                    are_cobis=True,
-                )
+                try:
+                    cobi_obj = CompleteCohp.from_file(
+                        fmt="LOBSTER",
+                        structure_file=structure_path,
+                        filename=cobicar_path,
+                        are_coops=False,
+                        are_cobis=True,
+                    )
+                except ValueError:
+                    cobi_obj = CompleteCohp.from_file(
+                        fmt="LOBSTER",
+                        structure_file=structure_path,
+                        filename=cobicar_path,
+                        are_coops=False,
+                        are_cobis=False,
+                        are_multi_center_cobis=True,
+                    )
 
         doc = cls.from_structure(
             structure=struct,
