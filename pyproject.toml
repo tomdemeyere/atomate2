@@ -34,7 +34,7 @@ dependencies = [
     "numpy",
     "pydantic-settings>=2.0.3",
     "pydantic>=2.0.1",
-    "pymatgen @ git+https://github.com/tomdemeyere/pymatgen.git@future",
+    "pymatgen @ git+https://github.com/tomdemeyere/pymatgen.git@mcba",
     "pymongo<=4.16.0",
 ]
 
@@ -82,7 +82,7 @@ strict-openff = [
     "monty==2026.2.18",
     "openmm-mdanalysis-reporter==0.1.0",
     "openmm==8.4.0.post2",
-    "pymatgen @ git+https://github.com/tomdemeyere/pymatgen.git@future", # EXERCISE CAUTION WHEN UPDATING - open ff is extremely sensitive to pymatgen version
+    "pymatgen @ git+https://github.com/tomdemeyere/pymatgen.git@mcba", # EXERCISE CAUTION WHEN UPDATING - open ff is extremely sensitive to pymatgen version
 ]
 
 # Forcefields have separate strict groupings because of conflicting dependencies.

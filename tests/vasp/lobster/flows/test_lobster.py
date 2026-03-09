@@ -327,3 +327,10 @@ def test_mp_vasp_lobstermaker(
     )
 
     assert isinstance(task_doc, LobsterTaskDocument)
+
+
+def test_mcba_lobstermaker(mock_lobster):
+    ...
+    # ref_paths_lobster = {
+    #    "lobster_run_0": "GaN_lobster",
+    # }
