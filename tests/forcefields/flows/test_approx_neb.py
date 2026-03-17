@@ -9,6 +9,8 @@ from atomate2.utils.testing.common import get_job_uuid_name_map
 
 
 def test_approx_neb_from_endpoints(test_dir, clean_dir):
+    pytest.importorskip("matgl")
+
     vasp_aneb_dir = test_dir / "vasp" / "ApproxNEB"
 
     endpoints = [
@@ -49,3 +51,15 @@ def test_approx_neb_from_endpoints(test_dir, clean_dir):
         image.volume == pytest.approx(endpoints[0].volume)
         for image in output["collate_images_single_hop"].images
     )
+
+
+def test_ext_load_approx_neb_initialization():
+    pytest.importorskip("mace")
+    calculator_meta = {
+        "@module": "mace.calculators",
+        "@callable": "mace_mp",
+    }
+    maker = ForceFieldApproxNebFromEndpointsMaker(
+        image_relax_maker=ForceFieldStaticMaker(force_field_name=calculator_meta)
+    )
+    assert maker.image_relax_maker.ase_calculator_name == "mace_mp"
