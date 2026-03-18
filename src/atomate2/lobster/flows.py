@@ -20,14 +20,14 @@ from atomate2.vasp.flows.lobster import VaspLobsterMaker
 if TYPE_CHECKING:
     from jobflow.core.flow import Flow
     from numpy.typing import NDArray
-    from pymatgen.core import IStructure
+    from pymatgen.core import Structure
 
     from atomate2.vasp.flows.core import UniformBandStructureMaker
     from atomate2.vasp.jobs.core import RelaxMaker
 
 
 @dataclass
-class MCBAMaker(Maker):
+class LobsterMCBMaker(Maker):
     """
     Maker to create a flow for performing multi-center bond analysis using Lobster.
 
@@ -44,7 +44,7 @@ class MCBAMaker(Maker):
         Additional fields to include in the flow metadata.
     """
 
-    name: str = "MCBALobsterFlow"  # type: ignore[assignment]
+    name: str = "LobsterMCBMaker"  # type: ignore[assignment]
     vasp_relax_maker: RelaxMaker | None = None
     vasp_static_maker: UniformBandStructureMaker | None = None
     lobster_maker: LobsterMaker | None = None
@@ -52,9 +52,8 @@ class MCBAMaker(Maker):
 
     def make(
         self,
-        site_collection: IStructure,
-        connectivity_matrix: NDArray[np.integer] | None = None,
-        unique_sites: NDArray[np.integer] | None = None,
+        structure: Structure,
+        multi_center_bonds: NDArray[np.integer] | None = None,
     ) -> Flow:
         """
         Create a flow for performing a multi-center bond Lobster calculation.
@@ -64,7 +63,7 @@ class MCBAMaker(Maker):
 
         Parameters
         ----------
-        structures : Structure
+        structure : Structure
             The structure for which to create the flow.
         vasp_relax_maker : RelaxMaker | None, optional
             A `RelaxMaker` for the VASP relaxation step. If None, no relaxation will be
@@ -81,24 +80,24 @@ class MCBAMaker(Maker):
         Flow
             A Flow object containing the LobsterMaker jobs for each structure.
         """
-        unique_sites = unique_sites or np.arange(len(site_collection))
+        if multi_center_bonds is None:
+            unique_sites = np.arange(len(structure))
 
-        connectivity_matrix = connectivity_matrix or get_connectivity_matrix(
-            site_collection, cutoff_multiplier=np.sqrt(2)
-        )
+            connectivity_matrix = get_connectivity_matrix(
+                structure, cutoff_multiplier=np.sqrt(2)
+            )
 
-        multi_center_bonds = get_three_center_bonds(
-            connectivity_matrix=connectivity_matrix,
-            unique_sites=unique_sites,
-        )
+            multi_center_bonds = get_three_center_bonds(
+                connectivity_matrix=connectivity_matrix,
+                unique_sites=unique_sites,
+            )
 
         if len(multi_center_bonds) == 0:
             raise ValueError(
-                "No multi-center bonds found in the provided structure with the given "
-                "settings."
+                "No multi-center bonds provided or found in the given structure."
             )
 
-        cell_indices = get_cell_neighbors(site_collection, multi_center_bonds)
+        cell_indices = get_cell_neighbors(structure, multi_center_bonds)
 
         lobster_input_dict = get_lobster_three_centers_cobibetween_input_dict(
             multi_center_bonds=multi_center_bonds,
@@ -119,4 +118,4 @@ class MCBAMaker(Maker):
             lobster_maker=lobster_maker,  # type: ignore[arg-type]
         )
 
-        return vasp_lobster_maker.make(site_collection)
+        return vasp_lobster_maker.make(structure)
