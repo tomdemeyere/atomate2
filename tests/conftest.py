@@ -123,6 +123,11 @@ def ba_ti_o3_structure(test_dir):
 
 
 @pytest.fixture
+def ga4_n4_structure(test_dir):
+    return Structure.from_file(test_dir / "structures" / "Ga4N4.cif")
+
+
+@pytest.fixture
 def b4_h12_structure(test_dir):
     return Structure.from_file(test_dir / "structures" / "B4H12.cif")
 

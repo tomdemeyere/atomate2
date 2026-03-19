@@ -119,9 +119,11 @@ def get_structure_unique_sites(
     """
     spacegroup_analyzer = SpacegroupAnalyzer(site_collection)
 
-    return np.array(
-        list(spacegroup_analyzer.get_symmetrized_structure().equivalent_indices)
+    equivalent_indices = (
+        spacegroup_analyzer.get_symmetrized_structure().equivalent_indices
     )
+
+    return np.array([eq[0] for eq in equivalent_indices])
 
 
 def get_lobster_three_centers_cobibetween_input_dict(
