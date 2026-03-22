@@ -213,6 +213,10 @@ def _check_incar(
     keys_to_check = (
         set(user_incar) if incar_settings is None else set(incar_settings)
     ) - set(incar_exclude or [])
+
+    # print(incar_settings)
+    # print(user_incar)
+    # print(keys_to_check)
     for key in keys_to_check:
         user_val = user_incar.get(key, defaults.get(key))
         ref_val = ref_incar.get(key, defaults.get(key))

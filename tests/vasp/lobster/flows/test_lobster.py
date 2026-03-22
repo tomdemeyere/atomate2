@@ -1,6 +1,7 @@
 from jobflow import run_locally
 from pymatgen.core.structure import Structure
 
+from atomate2.lobster.flows import LobsterMCBMaker
 from atomate2.lobster.jobs import LobsterMaker
 from atomate2.lobster.schemas import LobsterTaskDocument
 from atomate2.vasp.flows.lobster import VaspLobsterMaker
@@ -329,4 +330,63 @@ def test_mp_vasp_lobstermaker(
     assert isinstance(task_doc, LobsterTaskDocument)
 
 
-def test_mcba_lobstermaker(mock_vasp, mock_lobster): ...
+def test_mcba_lobstermaker(ga4_n4_structure, mock_vasp, mock_lobster, memory_jobstore):
+    ref_paths_vasp = {"static": "GaN_lobster/", "non-scf": "GaN_lobster/"}
+
+    ref_paths_lobster = {
+        "lobster_run_0": "GaN_lobster/",
+        "delete_lobster_wavecar": "GaN_lobster",
+    }
+
+    """
+    ref_incar_settings = {
+        "ALGO": "Fast",
+        "EDIFF": 1e-07,
+        "ENCUT": 520.0,
+        "ICHARG": 11,
+        "ISIF": 8,
+        "ISMEAR": -5,
+        "ISPIN": 2,
+        "ISYM": 0,
+        "KPAR": 4,
+        "LASPH": True,
+        "LCHARG": False,
+        "LMAXMIX": 4,
+        "LORBIT": 11,
+        "LREAL": "Auto",
+        "LWAVE": True,
+        "NBANDS": 52,
+        "NCORE": 2,
+        "NEDOS": 1889,
+        "NELM": 100,
+        "NSW": 0,
+        "PREC": "Accurate",
+        "SIGMA": 0.05,
+    }
+    """
+
+    # vasp_scf_nscf_flow = UniformBandStructureMaker(
+    #    static_maker=StaticMaker(
+    #        input_set_generator=StaticSetGenerator(
+    #            user_incar_settings=ref_incar_settings,
+    #        ),
+    #    ),
+    #    bs_maker=NonSCFMaker(
+    #        input_set_generator=NonSCFSetGenerator(
+    #            user_incar_settings=ref_incar_settings | {"LWAVE": True, "ISYM": 0}
+    #        ),
+    #    ),
+    # )
+
+    fake_run_vasp_kwargs = {
+        "static": {"check_inputs": []},
+        "non-scf": {"check_inputs": []},
+    }
+    fake_run_lobster_kwargs = {}
+
+    mock_vasp(ref_paths_vasp, fake_run_vasp_kwargs)
+    mock_lobster(ref_paths_lobster, fake_run_lobster_kwargs)
+
+    job = LobsterMCBMaker().make(ga4_n4_structure)
+
+    run_locally(job, create_folders=True, ensure_success=True, store=memory_jobstore)
