@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from pymatgen.core.periodic_table import Element
-from pymatgen.io.lobster.sets import LobsterSet
+from pymatgen.io.vasp.sets import LobsterSet
 
 from atomate2.vasp.sets.base import VaspInputGenerator
 
